@@ -24,9 +24,20 @@ body {
   outline: none;
 }
 
+*::selection {
+  background: #bb6222;
+}
+
 a {
   text-decoration: none;
   user-select: none;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button
+{
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 #app {
@@ -34,7 +45,7 @@ a {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2863b3;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 
 </style>
