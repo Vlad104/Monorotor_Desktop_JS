@@ -1,8 +1,8 @@
 <template>
   <div id="port">
     <a class="port__label">Выберите COM-порт</a>
-    <select class="port__select">
-      <option v-for="port in serialPorts" :key="port.id" value="sp0">{{ port }}</option>
+    <select class="port__select" v-model="selectedPort">
+      <option v-for="port in serialPorts" :key="port.id" :value="port">{{ port.comName }}</option>
     </select>
     <input type="button" class="port__button" v-bind:value="text" v-on:click="onConnect">
     <input type="button" class="port__button" value="Обновить" v-on:click="getPortsList">
@@ -11,13 +11,8 @@
 
 <script>
 const SerialPort = require('serialport');
-// const Readline = require('@serialport/parser-readline');
-// const port = new SerialPort(path, { baudRate: 19200 });
-// const parser = new Readline();
-// port.pipe(parser);
 
-// parser.on('data', line => console.log(`> ${line}`));
-// port.write('ROBOT POWER ON\n');
+import { bus } from '../main';
 
 export default {
   name: "SerialInterface",
@@ -26,23 +21,75 @@ export default {
       serialPorts: [],
       status: false,
       text: 'Подключить',
+      selectedPort: null,
+      port: null,
+      dataToTransmit: [],
     };
   },
   mounted() {
     this.getPortsList();
+    bus.$on('transmitData', (data) => {
+      console.log('transmitData');
+      this.dataToTransmit = data;
+      this.transmitData();
+    });
   },
   methods: {
     async getPortsList() {
       const list = await SerialPort.list();
-      // console.log(list);
+      console.log(list);
       this.serialPorts = [];
       list.forEach(element => {
-        this.serialPorts.push(element.comName);
+        this.serialPorts.push(element);
       });
+      if (this.serialPorts.length > 0) {
+        this.selectedPort = this.serialPorts[0];
+      }
     },
     onConnect() {
       this.status = !this.status;
-      this.text = (this.status) ? 'Отключить' : 'Подключить';
+      if (this.status) {
+        this.doConect();
+      } else {
+        this.doDisconnect();
+      }
+    },
+    doConect() {
+      this.text = 'Отключить';
+      console.log(this.selectedPort);
+      this.port = new SerialPort(this.selectedPort.comName, {
+        baudRate: 19200,
+      });
+      this.port.on('error', (err) => {
+        console.log('Error: ', err.message)
+      });
+      this.port.write('=0', (err) => {
+        if (err) {
+          return console.log('Error on write: ', err.message);
+        }
+        console.log('message written');
+      });
+      this.port.on('data', (data) => {
+        console.log(data.toString());
+        if (data.toString() == '!') {
+          this.transmitData();
+        } else if (data.toString() == '?') {
+          console.log('WTF');
+        }
+      });
+    },
+    doDisconnect() {
+      this.text = 'Подключить';
+      this.port.close();
+      console.log('Serial Port disconnected');
+    },
+    transmitData() {
+      if (this.dataToTransmit.length > 0) {
+        const message = this.dataToTransmit.shift();
+        console.log('RX:');
+        console.log(message);
+        this.port.write(message);
+      }
     }
   }
 };

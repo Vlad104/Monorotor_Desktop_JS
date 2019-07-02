@@ -38,10 +38,10 @@
         </div>
 
         <div class="control-frame">
-          <input class="btn btn_start" type="button" value="Старт" v-on:click="makeParams">
-          <input class="btn btn_cont" type="button" value="Непрерывно">
-          <input class="btn btn_press" type="button" value="По нажатию">
-          <input class="btn btn_stop" type="button" value="Стоп">
+          <input class="btn btn_start" type="button" value="Старт" v-on:click="doStart">
+          <input class="btn btn_cont" type="button" value="Непрерывно" v-on:click="doContinues">
+          <input class="btn btn_press" type="button" value="По нажатию" v-on:click="doContinues">
+          <input class="btn btn_stop" type="button" value="Стоп" v-on:click="doStop">
         </div>
       </div>
     </div>
@@ -54,6 +54,7 @@ import InputBlock from "./InputBlock";
 import InputComplexBlock from "./InputComplexBlock";
 
 import Protocol from '../modules/protocol';
+import { bus } from '../main';
 
 export default {
   name: "main-page",
@@ -64,8 +65,29 @@ export default {
     };
   },
   methods: {
-    makeParams() {
-      console.log(this.protocol.makeTransmitData());
+    doStart() {
+      let data = this.protocol.makeStart();
+      console.log(data);
+      bus.$emit('transmitData', data);
+      this.protocol.clearData();
+    },
+    doContinues() {
+      let data = this.protocol.makeContinues();
+      console.log(data);
+      bus.$emit('transmitData', data);
+      this.protocol.clearData();
+    },
+    doStop() {
+      let data = this.protocol.makeStop();
+      console.log(data);
+      bus.$emit('transmitData', data);
+      this.protocol.clearData();
+    },
+    doSave() {
+      let data = this.protocol.makeSave();
+      console.log(data);
+      bus.$emit('transmitData', data);
+      this.protocol.clearData();
     },
     setParams(slug, value) {
       params[slug] = value;
