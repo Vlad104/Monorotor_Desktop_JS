@@ -78,4 +78,8 @@ export default class Protocol {
   clearData() {
     this.transmitData = [];
   }
+
+  calcTime() {
+    return 60 * this.data.volume.value / this.data.feedrate.value + this.data.feedrate.value / this.data.accel.value;
+  }
 }

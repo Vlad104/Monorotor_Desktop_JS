@@ -108,12 +108,12 @@ export default {
 
 .port__select {
   text-align: left;
-  background-color: #181e24;
+  background-color: var(--backgroundColor);
   height: 1.6rem;
   width: 200px;
-  border: 1px solid #bb6222;
+  border: 1px solid var(--mainColor);
   border-radius: 5px;
-  color: #bb6222;
+  color: var(--mainColor);
   padding: 0 0 0 0.8em;
   font-size: 0.9rem;
   box-sizing: border-box;
@@ -121,21 +121,29 @@ export default {
 
 .port__button {
   text-align: center;
-  background-color: #181e24;
+  background-color: var(--backgroundColor);
   height: 1.6rem;
   width: 150px;
-  border: 1px solid #bb6222;
+  border: 1px solid var(--mainColor);
   border-radius: 5px;
-  color: #bb6222;
+  color: var(--mainColor);
   font-size: 0.9rem;
   box-sizing: border-box;
 }
 
 .port__button:hover {
-  background-color: #bb6222;
-  border: 1px solid #bb6222;
-  color: #181e24;
+  background-color: var(--mainColor);
+  border: 1px solid var(--mainColor);
+  color: var(--backgroundColor);
+  box-shadow: 0 0 4px 0px var(--mainColor)
+}
 
+.port__button:active {
+  box-shadow: inset 0 0 6px 0px #000;
+}
+
+.port__button:not(hover), btn:not(active) {
+   transition: 0.3s;
 }
 
 </style>

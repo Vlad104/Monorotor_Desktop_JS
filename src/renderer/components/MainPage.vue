@@ -31,8 +31,8 @@
             <div class="widget-info">
               <a class="widget-info__item">Объём с дозатора А: {{ protocol.data.volume.value * protocol.data.ratioA.value }} мл</a>
               <a class="widget-info__item">Объём с дозатора Б: {{ protocol.data.volume.value * protocol.data.ratioB.value }} мл</a>
-              <a class="widget-info__item" v-bind:protocol="protocol">Время дозирования: {{ 60 *parseFloat(protocol.data.volume.value / protocol.data.feedrate.value) + parseFloat(protocol.data.feedrate.value / protocol.data.accel.value) }} секунд</a>
-              <a class="widget-info__item">Таймер: {{ timeToEnd }} секунд</a>
+              <a class="widget-info__item">Время дозирования: {{ 60 * protocol.data.volume.value / protocol.data.feedrate.value + protocol.data.feedrate.value / protocol.data.accel.value }} секунд</a>
+              <a class="widget-info__item">Таймер: {{ timerSec }} секунд</a>
             </div>
           </div>
         </div>
@@ -55,21 +55,29 @@ import InputComplexBlock from "./InputComplexBlock";
 
 import Protocol from '../modules/protocol';
 import { bus } from '../main';
+import { setInterval } from 'timers';
 
 export default {
   name: "main-page",
   data() {
     return {
-      timeToEnd: 0,
+      timerSec: 0,
+      totalTime: 0,
       protocol: new Protocol(),
+      timeId: null,
     };
   },
+  // mounted() {
+  //   calcTotalTime();
+  // },
   methods: {
     doStart() {
       let data = this.protocol.makeStart();
       console.log(data);
       bus.$emit('transmitData', data);
       this.protocol.clearData();
+      this.stopTimer();
+      this.updateTimer();
     },
     doContinues() {
       let data = this.protocol.makeContinues();
@@ -82,6 +90,7 @@ export default {
       console.log(data);
       bus.$emit('transmitData', data);
       this.protocol.clearData();
+      this.stopTimer();
     },
     doSave() {
       let data = this.protocol.makeSave();
@@ -91,6 +100,21 @@ export default {
     },
     setParams(slug, value) {
       params[slug] = value;
+    },
+    updateTimer() {
+      let timer = this.protocol.calcTime();
+      this.timeId = setInterval(() => {
+        if (this.timerSec <= timer) {
+          this.timerSec += 1;
+        } else {
+          this.stopTimer();
+        }
+      }, 1000);
+    },
+    stopTimer() {
+      this.timerSec = 0;
+      clearInterval(this.timeId);
+      this.timeId = null;
     }
   },
   components: {
@@ -157,7 +181,7 @@ export default {
   flex-direction: column;
   width: 100%;
   /* height: 300px; */
-  border: solid 1px #bb6222;
+  border: solid 1px var(--mainColor);
   border-radius: 8px;
 }
 
@@ -165,7 +189,7 @@ export default {
   display: flex;
   flex-direction: row;
   font-size: 0.8em;
-  border-bottom: 1px solid #bb6222;
+  border-bottom: 1px solid var(--mainColor);
 }
 
 .tab__item {
@@ -194,16 +218,29 @@ export default {
 .select-items {
   margin: 10px 0 0 0;
   text-align: left;
-  background-color: #181e24;
+  background-color: var(--backgroundColor);
   height: 1.6rem;
   width: 200px;
-  border: 1px solid #bb6222;
+  border: 1px solid var(--mainColor);
   border-radius: 5px;
-  color: #bb6222;
+  color: var(--mainColor);
   padding: 0 0 0 0.8em;
   font-size: 0.9rem;
   box-sizing: border-box;
   margin-top: 20px;
+}
+
+
+.select-items:hover {
+  box-shadow: 0 0 10px 0px #FFF;
+}
+
+.select-items:focus {
+  box-shadow: 0 0 10px 0px #FFF;
+}
+
+.select-items:not(hover) {
+   transition: 0.3s;
 }
 
 .control-frame {
@@ -218,13 +255,34 @@ export default {
 
 .btn {
   height: 2rem;
-  border: 1px solid #2863b3;
+  border: 1px solid var(--secondColor);
   border-radius: 5px;
-  background-color: #2863b3;
-  color: #181e24;
+  background-color: var(--secondColor);
+  color: #FFFFFF;
   /* color: rgb(206, 205, 205); */
   font-size: 1rem;
-  font-weight: bolder;
+}
+
+.btn_start:hover,
+.btn_cont:hover,
+.btn_press:hover {
+  border-color: var(--secondDarkColor);
+  background-color: var(--secondDarkColor);
+  box-shadow: 0 0 10px 0px var(--secondColor);
+}
+
+.btn_stop:hover {
+  border-color: #6d1818;
+  background-color: #6d1818;
+  box-shadow: 0 0 10px 0px #ac2424;
+}
+
+.btn:active {
+  box-shadow: inset 0 0 4px 0px #000;
+}
+
+.btn:not(hover), btn:not(active) {
+   transition: 0.3s;
 }
 
 .btn_start {

@@ -31,20 +31,27 @@ export default {
 
 .input {
   text-align: left;
-  background-color: #181e24;
+  background-color: var(--backgroundColor);
   height: 1.6rem;
   width: 100%;
-  border: 1px solid #bb6222;
+  border: 1px solid var(--mainColor);
   border-radius: 5px;
-  color: #bb6222;
+  color: var(--mainColor);
   padding: 0 0 0 0.8em;
   font-size: 0.9rem;
   box-sizing: border-box;
 }
 
 .input:hover {
-  /* box-shadow: 0 0 40px 40px #bb622288; */
-  background-color: #182024;
+  box-shadow: 0 0 10px 0px #FFF;
+}
+
+.input:focus {
+  box-shadow: 0 0 10px 0px #FFF;
+}
+
+.input:not(hover) {
+   transition: 0.3s;
 }
 
 .label {

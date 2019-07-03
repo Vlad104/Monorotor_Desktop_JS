@@ -12,12 +12,25 @@
 
 <style>
 
+/* :root {
+    --backgroundColor: #181E24;
+    --mainColor: #bb6222;
+    --secondColor: #2863b3;
+} */
+
+:root {
+    --backgroundColor: #181E24;
+    --mainColor: #FFFFFF;
+    --secondColor: #2863b3;
+    --secondDarkColor: #1b4279;
+}
+
 html {
   font-size: 20px;
 }
 
 body {
-  background-color: #181E24;
+  background-color: var(--backgroundColor);
 }
 
 * {
@@ -25,7 +38,7 @@ body {
 }
 
 *::selection {
-  background: #bb6222;
+  background: var(--mainColor);
 }
 
 a {
@@ -44,7 +57,7 @@ input[type=number]::-webkit-outer-spin-button
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2863b3;
+  color: var(--secondColor);
   margin-top: 30px;
 }
 
