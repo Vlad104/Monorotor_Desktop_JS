@@ -6,10 +6,10 @@ const defaultData = {
   reverse:  {id: 'R', value: 0},
   propA:    {id: 'q', value: 1},
   propB:    {id: 'p', value: 1},
-  ratioA:   {id: 'a', value: 0.5},
-  ratioB:   {id: 'b', value: 0.5},
-  gearA:    {id: 'A', value: 2050},
-  gearB:    {id: 'B', value: 2050},
+  ratioA:   {id: 'r', value: 0.5},
+  ratioB:   {id: 'f', value: 0.5},
+  gearA:    {id: 'a', value: 2050},
+  gearB:    {id: 'b', value: 2050},
 };
 
 const defaultOldData = {
@@ -20,10 +20,10 @@ const defaultOldData = {
   reverse:  {id: 'R', value: -1},
   propA:    {id: 'q', value: -1},
   propB:    {id: 'p', value: -1},
-  ratioA:   {id: 'a', value: -1},
-  ratioB:   {id: 'b', value: -1},
-  gearA:    {id: 'A', value: -1},
-  gearB:    {id: 'B', value: -1},
+  ratioA:   {id: 'r', value: -1},
+  ratioB:   {id: 'f', value: -1},
+  gearA:    {id: 'a', value: -1},
+  gearB:    {id: 'b', value: -1},
 };
 
 const transmitList = [
@@ -35,7 +35,6 @@ const transmitList = [
   'gearA',
   'gearB',
   'ratioA',
-  'ratioB',
 ];
 
 export default class Protocol {
@@ -53,6 +52,11 @@ export default class Protocol {
       }
     });
     return this.transmitData;
+  }
+
+  updateRatios() {
+    this.data.ratioA.value = (this.data.propA.value / (parseFloat(this.data.propA.value) + parseFloat(this.data.propB.value))).toFixed(5);
+    this.data.ratioB.value = (this.data.propB.value / (parseFloat(this.data.propA.value) + parseFloat(this.data.propB.value))).toFixed(5);
   }
 
   makeStart() {

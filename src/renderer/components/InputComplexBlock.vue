@@ -2,14 +2,14 @@
   <div id="input-block-ratio">
     <a class="label">{{ label }}</a>
     <div class="ratio">
-      <input class="input input_ratio" type="number" :value="valueA" v-on:change="$emit('update:valueA', $event.target.value)">
-      <input class="input input_ratio" type="number" :value="valueB" v-on:change="$emit('update:valueB', $event.target.value)">
+      <input class="input input_ratio" type="number" :value="valueA" v-on:change="$emit('changeA', $event.target.value)">
+      <input class="input input_ratio" type="number" :value="valueB" v-on:change="$emit('changeB', $event.target.value)">
       <a
         class="proc proc_left"
-      >{{ (100 * valueA / (parseInt(valueA) + parseInt(valueB))).toFixed(3) }}%</a>
+      >{{ (100 * valueA / (parseFloat(valueA) + parseFloat(valueB))).toFixed(3) }}%</a>
       <a
         class="proc proc_right"
-      >{{ (100 * valueB / (parseInt(valueA) + parseInt(valueB))).toFixed(3) }}%</a>
+      >{{ (100 * valueB / (parseFloat(valueA) + parseFloat(valueB))).toFixed(3) }}%</a>
     </div>
   </div>
 </template>

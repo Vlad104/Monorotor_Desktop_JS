@@ -20,6 +20,7 @@
 
 :root {
     --backgroundColor: #181E24;
+    --backgroundLightColor: rgb(45, 57, 68);
     --mainColor: #FFFFFF;
     --secondColor: #2863b3;
     --secondDarkColor: #1b4279;
@@ -51,6 +52,10 @@ input[type=number]::-webkit-outer-spin-button
 {
   -webkit-appearance: none;
   margin: 0;
+}
+
+textarea {
+  resize: none;
 }
 
 #app {

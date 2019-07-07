@@ -70,11 +70,11 @@ export default {
         console.log('message written');
       });
       this.port.on('data', (data) => {
-        console.log(data.toString());
+        bus.$emit('rx', data.toString());
         if (data.toString() == '!') {
           this.transmitData();
         } else if (data.toString() == '?') {
-          console.log('WTF');
+          console.log('Error on board');
         }
       });
     },
@@ -86,8 +86,7 @@ export default {
     transmitData() {
       if (this.dataToTransmit.length > 0) {
         const message = this.dataToTransmit.shift();
-        console.log('RX:');
-        console.log(message);
+        bus.$emit('tx', message);
         this.port.write(message);
       }
     }

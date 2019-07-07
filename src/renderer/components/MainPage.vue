@@ -9,9 +9,14 @@
         <div class="input-frame">
           <InputBlock label="Объём, мл" v-bind:value.sync="protocol.data.volume.value"></InputBlock>
           <InputBlock label="Подача, мл/мин" v-bind:value.sync="protocol.data.feedrate.value"></InputBlock>
-          <InputComplexBlock label="Соотношение А/B" v-bind:valueA.sync="protocol.data.propA.value" v-bind:valueB.sync="protocol.data.propB.value"></InputComplexBlock>
+          <InputComplexBlock label="Соотношение А/B" 
+            v-bind:valueA="protocol.data.propA.value"
+            v-bind:valueB="protocol.data.propB.value"
+            v-on:changeA="updateRatioA"
+            v-on:changeB="updateRatioB"
+          ></InputComplexBlock>
           <InputBlock label="Реверс, мл" v-bind:value.sync="protocol.data.reverse.value"></InputBlock>
-          <select class="select-items">
+          <select class="select-items" v-model="protocol.data.dozator.value">
             <option value="2">Два дозатора</option>
             <option value="0">Дозатор А</option>
             <option value="1">Дозатор Б</option>
@@ -20,29 +25,8 @@
       </div>
 
       <div class="right-wrapper">
-        <div class="info-frame">
-          <div class="tab">
-            <a class="tab__item tab__item_selected">Инфа</a>
-            <a class="tab__item">Консоль</a>
-            <a class="tab__item">Кнопки</a>
-            <a class="tab__item">Текст</a>
-          </div>
-          <div class="widget">
-            <div class="widget-info">
-              <a class="widget-info__item">Объём с дозатора А: {{ protocol.data.volume.value * protocol.data.ratioA.value }} мл</a>
-              <a class="widget-info__item">Объём с дозатора Б: {{ protocol.data.volume.value * protocol.data.ratioB.value }} мл</a>
-              <a class="widget-info__item">Время дозирования: {{ 60 * protocol.data.volume.value / protocol.data.feedrate.value + protocol.data.feedrate.value / protocol.data.accel.value }} секунд</a>
-              <a class="widget-info__item">Таймер: {{ timerSec }} секунд</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="control-frame">
-          <input class="btn btn_start" type="button" value="Старт" v-on:click="doStart">
-          <input class="btn btn_cont" type="button" value="Непрерывно" v-on:click="doContinues">
-          <input class="btn btn_press" type="button" value="По нажатию" v-on:click="doContinues">
-          <input class="btn btn_stop" type="button" value="Стоп" v-on:click="doStop">
-        </div>
+        <InfoBlock :protocol="protocol"></InfoBlock>
+        <ControlBlock :protocol="protocol"></ControlBlock>
       </div>
     </div>
   </div>
@@ -52,6 +36,8 @@
 import SerialInterface from "./SerialInterface";
 import InputBlock from "./InputBlock";
 import InputComplexBlock from "./InputComplexBlock";
+import InfoBlock from "./InfoBlock";
+import ControlBlock from "./ControlBlock";
 
 import Protocol from '../modules/protocol';
 import { bus } from '../main';
@@ -67,60 +53,22 @@ export default {
       timeId: null,
     };
   },
-  // mounted() {
-  //   calcTotalTime();
-  // },
   methods: {
-    doStart() {
-      let data = this.protocol.makeStart();
-      console.log(data);
-      bus.$emit('transmitData', data);
-      this.protocol.clearData();
-      this.stopTimer();
-      this.updateTimer();
+    updateRatioA(value) {
+      this.protocol.data.propA.value = value;
+      this.protocol.updateRatios();
     },
-    doContinues() {
-      let data = this.protocol.makeContinues();
-      console.log(data);
-      bus.$emit('transmitData', data);
-      this.protocol.clearData();
-    },
-    doStop() {
-      let data = this.protocol.makeStop();
-      console.log(data);
-      bus.$emit('transmitData', data);
-      this.protocol.clearData();
-      this.stopTimer();
-    },
-    doSave() {
-      let data = this.protocol.makeSave();
-      console.log(data);
-      bus.$emit('transmitData', data);
-      this.protocol.clearData();
-    },
-    setParams(slug, value) {
-      params[slug] = value;
-    },
-    updateTimer() {
-      let timer = this.protocol.calcTime();
-      this.timeId = setInterval(() => {
-        if (this.timerSec <= timer) {
-          this.timerSec += 1;
-        } else {
-          this.stopTimer();
-        }
-      }, 1000);
-    },
-    stopTimer() {
-      this.timerSec = 0;
-      clearInterval(this.timeId);
-      this.timeId = null;
+    updateRatioB(value) {
+      this.protocol.data.propB.value = value;
+      this.protocol.updateRatios();
     }
   },
   components: {
     SerialInterface,
     InputBlock,
     InputComplexBlock,
+    InfoBlock,
+    ControlBlock,
   }
 };
 </script>
@@ -175,46 +123,6 @@ export default {
   padding: 5px 0 0 0;
 }
 
-.info-frame {
-  margin-top: 40px; 
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  /* height: 300px; */
-  border: solid 1px var(--mainColor);
-  border-radius: 8px;
-}
-
-.tab {
-  display: flex;
-  flex-direction: row;
-  font-size: 0.8em;
-  border-bottom: 1px solid var(--mainColor);
-}
-
-.tab__item {
-  margin: 10px 0 8px 10px; 
-}
-
-.tab__item_selected {
-  border: 1px solid #2863b3;
-  border-radius: 4px;
-}
-
-.widget {
-  margin: 15px;
-}
-
-.widget-info {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9em;
-}
-
-.widget-info__item {
-  margin-bottom: 15px;
-}
-
 .select-items {
   margin: 10px 0 0 0;
   text-align: left;
@@ -243,74 +151,5 @@ export default {
    transition: 0.3s;
 }
 
-.control-frame {
-  margin-top: 40px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  grid-gap: 15px;
-  grid-template-areas: "starts cont press" "stop stop stop";
-  width: 100%;
-}
 
-.btn {
-  height: 2rem;
-  border: 1px solid var(--secondColor);
-  border-radius: 5px;
-  background-color: var(--secondColor);
-  color: #FFFFFF;
-  /* color: rgb(206, 205, 205); */
-  font-size: 1rem;
-}
-
-.btn_start:hover,
-.btn_cont:hover,
-.btn_press:hover {
-  border-color: var(--secondDarkColor);
-  background-color: var(--secondDarkColor);
-  box-shadow: 0 0 10px 0px var(--secondColor);
-}
-
-.btn_stop:hover {
-  border-color: #6d1818;
-  background-color: #6d1818;
-  box-shadow: 0 0 10px 0px #ac2424;
-}
-
-.btn:active {
-  box-shadow: inset 0 0 4px 0px #000;
-}
-
-.btn:not(hover), btn:not(active) {
-   transition: 0.3s;
-}
-
-.btn_start {
-  grid-area: starts;
-}
-
-.btn_cont {
-  grid-area: cont;
-}
-
-.btn_press {
-  grid-area: press;
-}
-
-.btn_stop {
-  grid-area: stop;
-  border-color: #b32828;
-  background-color: #b32828;
-  color: #FFFFFF;
-  /* animation: stopBlinking 1s easy-out 0 inf alternative; */
-}
-
-@keyframes stopBlinking {
-  0% {
-    height: 2rem;
-  }
-  100% {
-    height: 3rem;
-  }
-}
 </style>
