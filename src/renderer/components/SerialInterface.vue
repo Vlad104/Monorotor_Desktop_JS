@@ -1,18 +1,26 @@
 <template>
   <div id="port">
     <a class="port__label">Выберите COM-порт</a>
+    <!-- <SelectBlock></SelectBlock> -->
     <select class="port__select" v-model="selectedPort">
       <option v-for="port in serialPorts" :key="port.id" :value="port">{{ port.comName }}</option>
     </select>
-    <input type="button" class="port__button" v-bind:value="text" v-on:click="onConnect">
-    <input type="button" class="port__button" value="Обновить" v-on:click="getPortsList">
+    <input
+      type="button"
+      v-bind:class="{port__button: 'true', 'port__button_disconnected': !status}"
+      v-bind:value="text"
+      v-on:click="onConnect"
+    />
+    <input type="button" class="port__button" value="Обновить" v-on:click="getPortsList" />
   </div>
 </template>
 
 <script>
-const SerialPort = require('serialport');
+const SerialPort = require("serialport");
 
-import { bus } from '../main';
+import { bus } from "../main";
+import SelectBlock from "./SelectBlock";
+import Modal from "./Modal";
 
 export default {
   name: "SerialInterface",
@@ -20,16 +28,16 @@ export default {
     return {
       serialPorts: [],
       status: false,
-      text: 'Подключить',
+      text: "Подключить",
       selectedPort: null,
       port: null,
-      dataToTransmit: [],
+      dataToTransmit: []
     };
   },
   mounted() {
     this.getPortsList();
-    bus.$on('transmitData', (data) => {
-      console.log('transmitData');
+    bus.$on("transmitData", data => {
+      console.log("transmitData");
       this.dataToTransmit = data;
       this.transmitData();
     });
@@ -37,67 +45,74 @@ export default {
   methods: {
     async getPortsList() {
       const list = await SerialPort.list();
-      console.log(list);
       this.serialPorts = [];
       list.forEach(element => {
         this.serialPorts.push(element);
       });
       if (this.serialPorts.length > 0) {
         this.selectedPort = this.serialPorts[0];
+      } else {
+        this.selectedPort = null;
       }
     },
     onConnect() {
-      this.status = !this.status;
-      if (this.status) {
-        this.doConect();
+      if (!this.status) {
+        this.status = this.doConect();
       } else {
-        this.doDisconnect();
+        this.status = this.doDisconnect();
       }
     },
     doConect() {
-      this.text = 'Отключить';
-      console.log(this.selectedPort);
+      if (this.selectedPort === null) {
+        this.$modal.show(Modal, {text: 'Не выбран COM-порт'}, {draggable: true}, {width: 200}, {height: 100});
+        return false;
+      }
+      this.text = "Отключить";
+      bus.$emit("reset_data");
       this.port = new SerialPort(this.selectedPort.comName, {
-        baudRate: 19200,
+        baudRate: 19200
       });
-      this.port.on('error', (err) => {
-        console.log('Error: ', err.message)
+      this.port.on("error", err => {
+        console.log("Error: ", err.message);
+        this.$modal.show(Modal, {text: err.message}, {draggable: true});
       });
-      this.port.write('=0', (err) => {
+      this.port.write("=0", err => {
         if (err) {
-          return console.log('Error on write: ', err.message);
+          this.$modal.show(Modal, {text: err}, {draggable: true});
         }
-        console.log('message written');
       });
-      this.port.on('data', (data) => {
-        bus.$emit('rx', data.toString());
-        if (data.toString() == '!') {
+      this.port.on("data", data => {
+        bus.$emit("rx", data.toString());
+        if (data.toString() == "!") {
           this.transmitData();
-        } else if (data.toString() == '?') {
-          console.log('Error on board');
+        } else if (data.toString() == "?") {
+          console.log("Error on board");
         }
       });
+      return true;
     },
     doDisconnect() {
-      this.text = 'Подключить';
+      this.text = "Подключить";
       this.port.close();
-      console.log('Serial Port disconnected');
+      console.log("Serial Port disconnected");
+      return false;
     },
     transmitData() {
       if (this.dataToTransmit.length > 0) {
         const message = this.dataToTransmit.shift();
-        bus.$emit('tx', message);
+        bus.$emit("tx", message);
         this.port.write(message);
       }
     }
+  },
+  components: {
+    SelectBlock
   }
 };
 </script>
 
 <style scoped>
-
 #port {
-  
 }
 
 .port__label {
@@ -118,6 +133,18 @@ export default {
   box-sizing: border-box;
 }
 
+.port__select:hover {
+  box-shadow: 0 0 10px 0px #fff;
+}
+
+.select-items:focus {
+  box-shadow: 0 0 10px 0px #fff;
+}
+
+.select-items:not(hover) {
+  transition: 0.3s;
+}
+
 .port__button {
   text-align: center;
   background-color: var(--backgroundColor);
@@ -134,15 +161,29 @@ export default {
   background-color: var(--mainColor);
   border: 1px solid var(--mainColor);
   color: var(--backgroundColor);
-  box-shadow: 0 0 4px 0px var(--mainColor)
+  box-shadow: 0 0 4px 0px var(--mainColor);
 }
 
 .port__button:active {
   box-shadow: inset 0 0 6px 0px #000;
 }
 
-.port__button:not(hover), btn:not(active) {
-   transition: 0.3s;
+.port__button:not(hover),
+btn:not(active) {
+  transition: 0.3s;
 }
 
+.port__button_disconnected {
+  animation: blinking 0.6s ease-out infinite alternate;
+  /* box-shadow: 0 0 10px 0px #FFF; */
+}
+
+@keyframes blinking {
+  0% {
+    box-shadow: 0 0 0px 0px #fff;
+  }
+  100% {
+    box-shadow: 0 0 15px 0px #fff;
+  }
+}
 </style>

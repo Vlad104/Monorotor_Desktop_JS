@@ -4,7 +4,7 @@
     <input class="btn btn_cont" type="button" value="Непрерывно" v-on:click="doContinues">
     <input class="btn btn_press" type="button" value="По нажатию" v-on:mousedown="doContinues" v-on:mouseup="doStop">
     <input class="btn btn_stop" type="button" value="Стоп" v-on:click="doStop">
-    </div>
+  </div>
 </template>
 
 <script>

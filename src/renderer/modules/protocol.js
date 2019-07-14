@@ -86,4 +86,9 @@ export default class Protocol {
   calcTime() {
     return 60 * this.data.volume.value / this.data.feedrate.value + this.data.feedrate.value / this.data.accel.value;
   }
+
+  reset() {
+    this.oldData = JSON.parse(JSON.stringify(defaultOldData));
+    this.clearData();
+  }
 }

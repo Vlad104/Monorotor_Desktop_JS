@@ -2,25 +2,35 @@
   <div id="main">
     <div class="head-wrapper">
       <SerialInterface></SerialInterface>
+      <!-- <div>
+        <a>Справка</a>
+        <a>Настройки</a>
+      </div> -->
     </div>
 
     <div class="body-wrapper">
       <div class="left-wrapper">
         <div class="input-frame">
-          <InputBlock label="Объём, мл" v-bind:value.sync="protocol.data.volume.value"></InputBlock>
-          <InputBlock label="Подача, мл/мин" v-bind:value.sync="protocol.data.feedrate.value"></InputBlock>
-          <InputComplexBlock label="Соотношение А/B" 
-            v-bind:valueA="protocol.data.propA.value"
-            v-bind:valueB="protocol.data.propB.value"
-            v-on:changeA="updateRatioA"
-            v-on:changeB="updateRatioB"
-          ></InputComplexBlock>
-          <InputBlock label="Реверс, мл" v-bind:value.sync="protocol.data.reverse.value"></InputBlock>
-          <select class="select-items" v-model="protocol.data.dozator.value">
-            <option value="2">Два дозатора</option>
-            <option value="0">Дозатор А</option>
-            <option value="1">Дозатор Б</option>
-          </select>
+          <Switcher class="switcher" v-on:change.native="switchParams"></Switcher>
+          <div v-if="mainParams">
+            <InputBlock label="Объём, мл" v-bind:value.sync="protocol.data.volume.value"></InputBlock>
+            <InputBlock label="Подача, мл/мин" v-bind:value.sync="protocol.data.feedrate.value"></InputBlock>
+            <InputComplexBlock
+              label="Соотношение А/B"
+              v-if="protocol.data.dozator.value !== '0' && protocol.data.dozator.value !== '1'"
+              v-bind:valueA="protocol.data.propA.value"
+              v-bind:valueB="protocol.data.propB.value"
+              v-on:changeA="updateRatioA"
+              v-on:changeB="updateRatioB"
+            ></InputComplexBlock>
+            <SelectBlock :items="dozatorsMode" v-on:select="updateDozatorsMode" :label="'Режим'"></SelectBlock>
+          </div>
+          <div v-else>
+            <InputBlock label="Реверс, мл" v-bind:value.sync="protocol.data.reverse.value"></InputBlock>
+            <InputBlock label="Ускорение" v-bind:value.sync="protocol.data.accel.value"></InputBlock>
+            <InputBlock label="Передаточное А" v-bind:value.sync="protocol.data.gearA.value"></InputBlock>
+            <InputBlock label="Передаточное Б" v-bind:value.sync="protocol.data.gearB.value"></InputBlock>
+          </div>
         </div>
       </div>
 
@@ -38,10 +48,11 @@ import InputBlock from "./InputBlock";
 import InputComplexBlock from "./InputComplexBlock";
 import InfoBlock from "./InfoBlock";
 import ControlBlock from "./ControlBlock";
+import SelectBlock from "./SelectBlock";
+import Switcher from "./Switcher";
 
-import Protocol from '../modules/protocol';
-import { bus } from '../main';
-import { setInterval } from 'timers';
+import Protocol from "../modules/protocol";
+import { bus } from "../main";
 
 export default {
   name: "main-page",
@@ -51,7 +62,16 @@ export default {
       totalTime: 0,
       protocol: new Protocol(),
       timeId: null,
+      dozatorsMode: [
+        { value: "2", text: "Два дозатора" },
+        { value: "0", text: "Дозатор А" },
+        { value: "1", text: "Дозатор Б" }
+      ],
+      mainParams: true,
     };
+  },
+  mounted() {
+    bus.$on("reset_data", () => this.protocol.reset());
   },
   methods: {
     updateRatioA(value) {
@@ -61,6 +81,13 @@ export default {
     updateRatioB(value) {
       this.protocol.data.propB.value = value;
       this.protocol.updateRatios();
+    },
+    updateDozatorsMode(value) {
+      this.protocol.data.dozator.value = value;
+    },
+    switchParams() {
+      this.mainParams = !this.mainParams;
+      console.log(this.mainParams);
     }
   },
   components: {
@@ -69,6 +96,8 @@ export default {
     InputComplexBlock,
     InfoBlock,
     ControlBlock,
+    SelectBlock,
+    Switcher
   }
 };
 </script>
@@ -123,33 +152,9 @@ export default {
   padding: 5px 0 0 0;
 }
 
-.select-items {
-  margin: 10px 0 0 0;
-  text-align: left;
-  background-color: var(--backgroundColor);
-  height: 1.6rem;
-  width: 200px;
-  border: 1px solid var(--mainColor);
-  border-radius: 5px;
-  color: var(--mainColor);
-  padding: 0 0 0 0.8em;
-  font-size: 0.9rem;
-  box-sizing: border-box;
-  margin-top: 20px;
+.switcher {
+  position: relative;
+  left: 160px;
 }
-
-
-.select-items:hover {
-  box-shadow: 0 0 10px 0px #FFF;
-}
-
-.select-items:focus {
-  box-shadow: 0 0 10px 0px #FFF;
-}
-
-.select-items:not(hover) {
-   transition: 0.3s;
-}
-
 
 </style>

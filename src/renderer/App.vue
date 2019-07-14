@@ -22,7 +22,7 @@
     --backgroundColor: #181E24;
     --backgroundLightColor: rgb(45, 57, 68);
     --mainColor: #FFFFFF;
-    --secondColor: #2863b3;
+    --secondColor: #3374ce;
     --secondDarkColor: #1b4279;
 }
 
