@@ -1,6 +1,7 @@
 const defaultData = {
   dozator:  {id: 'D', value: 2},
   volume:   {id: 'V', value: 100},
+  mass:     {id: 'm', value: 100},
   feedrate: {id: 'F', value: 200},
   accel:    {id: 'A', value: 1000},
   reverse:  {id: 'R', value: 0},
@@ -26,6 +27,19 @@ const defaultOldData = {
   gearB:    {id: 'b', value: -1},
 };
 
+const defaultDataMassUnit = {
+  mass:     100,
+  feedrate: 200,
+  accel:    1000,
+  reverse:  0,
+  ratioA:    1,
+  ratioB:    1,
+  propA:    1,
+  propB:    1,
+  densityA: 1,
+  densityB: 1,
+};
+
 const transmitList = [
   'dozator',
   'volume',
@@ -41,6 +55,7 @@ export default class Protocol {
   constructor(data = defaultData) {
     this.data = JSON.parse(JSON.stringify(defaultData));
     this.oldData = JSON.parse(JSON.stringify(defaultOldData));
+    this.massUnits = JSON.parse(JSON.stringify(defaultDataMassUnit));
     this.transmitData = [];
   }
 
@@ -90,5 +105,13 @@ export default class Protocol {
   reset() {
     this.oldData = JSON.parse(JSON.stringify(defaultOldData));
     this.clearData();
+  }
+
+  updateVolume() {
+    this.data.volume = (this.data.mass / this.data.density).toFixed(5);
+  }
+
+  updateMass() {
+    this.data.mass = (this.data.volume * this.data.density).toFixed(5);
   }
 }

@@ -10,6 +10,9 @@
 export default {
   name: "Switcher",
   data() {
+    return {
+
+    };
   },
   mounted() {
   },

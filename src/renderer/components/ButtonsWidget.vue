@@ -58,4 +58,17 @@ export default {
   color: #FFF;
 }
 
+.widget-buttons__button:hover {
+  border-color: var(--secondDarkColor);
+  background-color: var(--secondDarkColor);
+  box-shadow: 0 0 10px 0px var(--secondColor);
+}
+.widget-buttons__button:active {
+  box-shadow: inset 0 0 4px 0px #000;
+}
+
+.widget-buttons__button:not(hover), btn:not(active) {
+   transition: 0.3s;
+}
+
 </style>

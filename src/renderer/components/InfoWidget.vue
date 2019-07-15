@@ -1,11 +1,11 @@
 <template>
   <div class="widget-info">
-    <a class="widget-info__item">Объём с дозатора А: {{ (protocol.data.volume.value * protocol.data.ratioA.value).toFixed(3) }} мл</a>
-    <a class="widget-info__item">Объём с дозатора Б: {{ (protocol.data.volume.value * protocol.data.ratioB.value).toFixed(3) }} мл</a>
+    <a class="widget-info__item">Объём с дозатора А: <i>{{ (protocol.data.volume.value * protocol.data.ratioA.value).toFixed(3) }} мл</i></a>
+    <a class="widget-info__item">Объём с дозатора Б: <i>{{ (protocol.data.volume.value * protocol.data.ratioB.value).toFixed(3) }} мл</i></a>
     <a
       class="widget-info__item"
-    >Время дозирования: {{ (60 * protocol.data.volume.value / protocol.data.feedrate.value + protocol.data.feedrate.value / protocol.data.accel.value).toFixed(2) }} секунд</a>
-    <a class="widget-info__item">Таймер: {{ time }} секунд</a>
+    >Время дозирования: <i>{{ (60 * protocol.data.volume.value / protocol.data.feedrate.value + protocol.data.feedrate.value / protocol.data.accel.value).toFixed(2) }} секунд</i></a>
+    <a class="widget-info__item">Таймер: <i>{{ time }} секунд</i></a>
   </div>
 </template>
 

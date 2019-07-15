@@ -115,6 +115,15 @@ export default {
   margin: 10px 0 10px 20px; 
 }
 
+.tab__item:hover {
+  border-radius: 50%;
+  box-shadow: 0 0 10px 0px var(--secondColor);
+}
+
+.tab__item:not(hover), btn:not(active) {
+   transition: 0.3s;
+}
+
 .tab__item_selected {
   border-radius: 50%;
   box-shadow: 0 0 10px 0px var(--mainColor);
