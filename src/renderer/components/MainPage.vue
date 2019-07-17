@@ -10,11 +10,13 @@
 
     <div class="body-wrapper">
       <div class="left-wrapper">
+        <div class="swithets-bar">
+          <Switcher class="switcher" v-on:change.native="switchParams" :id="'params'"></Switcher>
+          <Switcher class="switcher" v-on:change.native="switchUnits" :id="'units'"></Switcher>
+        </div>
         <div class="input-frame">
-          <Switcher class="switcher" v-on:change.native="switchParams"></Switcher>
-          <Switcher class="switcher" v-on:change.native="switchUnits"></Switcher>
           <div v-if="mainParams">
-            <!-- <div v-if="volumeUnits"> -->
+            <div v-if="volumeUnits">
               <InputBlock label="Объём, мл" v-bind:value.sync="protocol.data.volume.value"></InputBlock>
               <InputBlock label="Подача, мл/мин" v-bind:value.sync="protocol.data.feedrate.value"></InputBlock>
               <InputComplexBlock
@@ -25,8 +27,8 @@
                 v-on:changeA="updateRatioA"
                 v-on:changeB="updateRatioB"
               ></InputComplexBlock>
-            <!-- </div> -->
-            <!-- <div v-else> -->
+            </div>
+            <div v-else>
               <InputBlock label="Масса, г" v-bind:value.sync="protocol.massUnits.mass" v-on:change.native="massUnitsChange"></InputBlock>
               <InputBlock label="Подача, г/мин" v-bind:value.sync="protocol.massUnits.feedrate" v-on:change.native="feedrateUnitsChange"></InputBlock>
               <InputComplexBlock
@@ -37,20 +39,20 @@
                 v-on:changeA="updateMassRatioA"
                 v-on:changeB="updateMassRatioB"
               ></InputComplexBlock>
-            <!-- </div> -->
+            </div>
             <SelectBlock :items="dozatorsMode" v-on:select="updateDozatorsMode" :label="'Режим'"></SelectBlock>
           </div>
           <div v-else>
-            <!-- <div v-if="volumeUnits"> -->
+            <div v-if="volumeUnits">
               <InputBlock label="Реверс, мл" v-bind:value.sync="protocol.data.reverse.value"></InputBlock>
               <InputBlock label="Ускорение" v-bind:value.sync="protocol.data.accel.value"></InputBlock>
-            <!-- </div> -->
-            <!-- <div v-else> -->
+            </div>
+            <div v-else>
               <InputBlock label="Реверс, г" v-bind:value.sync="protocol.massUnits.reverse" v-on:change.native="reverseUnitsChange"></InputBlock>
               <InputBlock label="Ускорение" v-bind:value.sync="protocol.massUnits.accel" v-on:change.native="accelUnitsChange"></InputBlock>
               <InputBlock label="Плотность А, г/мл" v-bind:value.sync="protocol.massUnits.densityA" v-on:change.native="updateMassDensityA"></InputBlock>
               <InputBlock label="Плотность Б, г/мл" v-bind:value.sync="protocol.massUnits.densityB" v-on:change.native="updateMassDensityB"></InputBlock>
-            <!-- </div> -->
+            </div>
             <InputBlock label="Передаточное А" v-bind:value.sync="protocol.data.gearA.value"></InputBlock>
             <InputBlock label="Передаточное Б" v-bind:value.sync="protocol.data.gearB.value"></InputBlock>
           </div>
@@ -114,31 +116,31 @@ export default {
     },
     switchUnits() {
       this.volumeUnits = !this.volumeUnits;
-      // this.recalculateMassUnits();
+      this.recalculateUnits();
     },
     massUnitsChange() {
       this.protocol.data.volume.value = (
         parseFloat(this.protocol.massUnits.mass * this.protocol.massUnits.ratioA / this.protocol.massUnits.densityA) +
         parseFloat(this.protocol.massUnits.mass * this.protocol.massUnits.ratioB / this.protocol.massUnits.densityB)
-        ).toFixed(5);
+      ).toFixed(5);
     },
     feedrateUnitsChange() {
       this.protocol.data.feedrate.value = (
         parseFloat(this.protocol.massUnits.feedrate * this.protocol.massUnits.ratioA / this.protocol.massUnits.densityA) +
         parseFloat(this.protocol.massUnits.feedrate * this.protocol.massUnits.ratioB / this.protocol.massUnits.densityB)
-        ).toFixed(5);
+      ).toFixed(5);
     },
     reverseUnitsChange() {
       this.protocol.data.reverse.value = (
         parseFloat(this.protocol.massUnits.reverse * this.protocol.massUnits.ratioA / this.protocol.massUnits.densityA) +
         parseFloat(this.protocol.massUnits.reverse * this.protocol.massUnits.ratioB / this.protocol.massUnits.densityB)
-        ).toFixed(5);      
+      ).toFixed(5);
     },
     accelUnitsChange() {
       this.protocol.data.reverse.value = (
         parseFloat(this.protocol.massUnits.accel * this.protocol.massUnits.ratioA / this.protocol.massUnits.densityA) +
         parseFloat(this.protocol.massUnits.accel * this.protocol.massUnits.ratioB / this.protocol.massUnits.densityB)
-        ).toFixed(5);      
+    ).toFixed(5)
     },
     recalculateUnits() {
       this.massUnitsChange();
@@ -148,12 +150,20 @@ export default {
     },
     updateMassRatioA(value) {
       this.protocol.massUnits.propA = value;
+
+      this.protocol.massUnits.ratioA = (this.protocol.massUnits.propA / (parseFloat(this.protocol.massUnits.propA) + parseFloat(this.protocol.massUnits.propB))).toFixed(5);
+      this.protocol.massUnits.ratioB = (this.protocol.massUnits.propB / (parseFloat(this.protocol.massUnits.propA) + parseFloat(this.protocol.massUnits.propB))).toFixed(5);
+
       this.protocol.data.propA.value = this.protocol.massUnits.propA / this.protocol.massUnits.densityA;
       this.updateRatioA(this.protocol.data.propA.value);
       this.recalculateUnits();
     },
     updateMassRatioB(value) {
       this.protocol.massUnits.propB = value;
+
+      this.protocol.massUnits.ratioA = (this.protocol.massUnits.propA / (parseFloat(this.protocol.massUnits.propA) + parseFloat(this.protocol.massUnits.propB))).toFixed(5);
+      this.protocol.massUnits.ratioB = (this.protocol.massUnits.propB / (parseFloat(this.protocol.massUnits.propA) + parseFloat(this.protocol.massUnits.propB))).toFixed(5);
+
       this.protocol.data.propB.value = this.protocol.massUnits.propB / this.protocol.massUnits.densityB;
       this.updateRatioB(this.protocol.data.propB.value);
       this.recalculateUnits();
@@ -231,7 +241,14 @@ export default {
 
 .switcher {
   position: relative;
-  left: 160px;
+  /* left: 160px; */
+  left: 0px;
+  margin-right: 10px;
+}
+
+.swithets-bar {
+  display: flex;
+  flex-direction: row;
 }
 
 </style>

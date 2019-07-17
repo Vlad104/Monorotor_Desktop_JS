@@ -1,7 +1,7 @@
 <template>
   <div id="switcher">
-    <input type="checkbox" id="switch"/>
-    <label for="switch">Toggle</label>
+    <input type="checkbox" :id="id" class="switcher__input"/>
+    <label :for="id" class="switcher__label">Toggle</label>
   </div>
 </template>
 
@@ -9,6 +9,7 @@
 
 export default {
   name: "Switcher",
+  props: ["id"],
   data() {
     return {
 
@@ -23,12 +24,12 @@ export default {
 
 <style scope>
 
-input[type=checkbox] {
+.switcher__input {
   height: 0;
   width: 0;
   visibility: hidden;
 }
-label {
+.switcher__label {
   cursor: pointer;
   text-indent: -9999px;
   width: 40px;
@@ -38,7 +39,7 @@ label {
   border-radius: 20px;
   position: relative;
 }
-label:after {
+.switcher__label:after {
   content: '';
   position: absolute;
   top: 2px;
@@ -49,18 +50,18 @@ label:after {
   border-radius: 50%;
   transition: 0.3s;
 }
-input:checked + label {
+.switcher__input:checked + .switcher__label {
   background: var(--secondDarkColor);
 }
-input:checked + label:after {
+.switcher__input:checked + .switcher__label:after {
   left: calc(100% - 1px);
   transform: translateX(-100%);
 }
-label:active:after {
+.switcher__label:active:after {
   width: 26px;
 }
 
-label:hover {
+.switcher__label:hover {
   box-shadow: 0 0 4px 0px var(--mainColor);
 }
 
