@@ -98,6 +98,11 @@ export default {
   },
   mounted() {
     bus.$on("reset_data", () => this.protocol.reset());
+    // this.protocol.load();
+    window.addEventListener('beforeunload', (e) => {
+      e.preventDefault();
+      this.protocol.save();
+    });
   },
   methods: {
     updateRatioA(value) {

@@ -1,7 +1,7 @@
 <template>
   <div class="widget-console">
     <textarea readonly class="widget-console__text-area" v-model="consoleText" placeholder="Консоль для передачи команд..."></textarea>
-    <div class="input-sender">
+    <div class="message-sender">
       <input class="message-sender__input" type="text" v-model="sendText" placeholder="Введите команду">
       <input class="message-sender__button" type="button" value="Отправить" v-on:click="sendMessage">
       <input class="message-sender__button" type="button" value="Очистить" v-on:click="clearTextArea">

@@ -32,8 +32,8 @@ const defaultDataMassUnit = {
   feedrate: 200,
   accel:    1000,
   reverse:  0,
-  ratioA:    1,
-  ratioB:    1,
+  ratioA:    0.5,
+  ratioB:    0.5,
   propA:    1,
   propB:    1,
   densityA: 1,
@@ -57,6 +57,7 @@ export default class Protocol {
     this.oldData = JSON.parse(JSON.stringify(defaultOldData));
     this.massUnits = JSON.parse(JSON.stringify(defaultDataMassUnit));
     this.transmitData = [];
+    this.load();
   }
 
   makeTransmitData() {
@@ -113,5 +114,26 @@ export default class Protocol {
 
   updateMass() {
     this.data.mass = (this.data.volume * this.data.density).toFixed(5);
+  }
+
+  save() {
+    localStorage.protocolData = JSON.stringify(this.data);
+    localStorage.protocolMassUnits = JSON.stringify(this.massUnits);
+  }
+
+  load() {
+    if (localStorage.protocolData) {
+      this.data = JSON.parse(localStorage.protocolData);
+    } else {
+      this.data = JSON.parse(JSON.stringify(defaultData));
+    }
+
+    if (localStorage.protocolMassUnits) {
+      this.massUnits = JSON.parse(localStorage.protocolMassUnits);
+    } else {
+      this.massUnits = JSON.parse(JSON.stringify(defaultDataMassUnit));
+    }
+
+    this.reset();
   }
 }
