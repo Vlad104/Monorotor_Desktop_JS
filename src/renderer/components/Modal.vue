@@ -1,7 +1,7 @@
 <template>
   <div class="modal">
-    <h2>This is created inline</h2>
-    <p>{{ text }}</p>
+    <h2 class="modal__title">Ошибка</h2>
+    <p class="modal__text">{{ text }}</p>
   </div>
 </template>
 
@@ -23,10 +23,19 @@ export default {
 <style scope>
 
 .modal {
-  /* margin-left: auto; */
-  /* margin-right: auto; */
-  /* width: 300px; */
-  /* height: 200px; */
+  text-align: center;
+  /* background-color: var(--backgroundLightColor); */
+  /* width: 100%;
+  height: 100%; */
+}
+
+.modal__title {
+  /* color: var(--mainColor); */
+  color: #bb6222;  
+}
+
+.modal__text {
+  color: var(--secondColor);
 }
 
 </style>

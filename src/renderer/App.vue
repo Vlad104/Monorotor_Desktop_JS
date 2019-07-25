@@ -27,6 +27,7 @@
 }
 
 html {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
   font-size: 20px;
 }
 

@@ -61,10 +61,11 @@ export default {
       } else {
         this.status = this.doDisconnect();
       }
+      bus.$emit('serial', this.status);
     },
     doConect() {
       if (this.selectedPort === null) {
-        this.$modal.show(Modal, {text: 'Не выбран COM-порт'}, {draggable: true}, {width: 200}, {height: 100});
+        this.$modal.show(Modal, {text: 'Не выбран COM-порт'}, {draggable: true, width: 300, height: 200});
         return false;
       }
       this.text = "Отключить";
@@ -98,6 +99,11 @@ export default {
       return false;
     },
     transmitData() {
+      if (!this.status) {
+        this.$modal.show(Modal, {text: 'Не выбран COM-порт'}, {draggable: true, width: 300, height: 200});
+        return;
+      }
+
       if (this.dataToTransmit.length > 0) {
         const message = this.dataToTransmit.shift();
         bus.$emit("tx", message);

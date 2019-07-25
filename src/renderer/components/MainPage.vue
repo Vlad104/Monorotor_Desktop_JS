@@ -61,7 +61,7 @@
 
       <div class="right-wrapper">
         <InfoBlock :protocol="protocol"></InfoBlock>
-        <ControlBlock :protocol="protocol"></ControlBlock>
+        <ControlBlock v-if="serialConnected" :protocol="protocol"></ControlBlock>
       </div>
     </div>
   </div>
@@ -94,10 +94,12 @@ export default {
       ],
       mainParams: true,
       volumeUnits: true,
+      serialConnected: false,
     };
   },
   mounted() {
     bus.$on("reset_data", () => this.protocol.reset());
+    bus.$on("serial", (flag) => this.serialConnected = flag);
     // this.protocol.load();
     window.addEventListener('beforeunload', (e) => {
       e.preventDefault();
