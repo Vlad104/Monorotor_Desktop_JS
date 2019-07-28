@@ -59,16 +59,16 @@ export default {
           text: 'Консоль',
           svg: svgConsole,
         },
-        {
-          id: 2,
-          text: 'Кнопки',
-          svg: svgButtons,
-        },
-        {
-          id: 3,
-          text: 'Текст',
-          svg: svgtext,
-        },
+        // {
+        //   id: 2,
+        //   text: 'Кнопки',
+        //   svg: svgButtons,
+        // },
+        // {
+        //   id: 3,
+        //   text: 'Текст',
+        //   svg: svgtext,
+        // },
       ],
       selectedTabId: 0,
     };

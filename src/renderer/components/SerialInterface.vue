@@ -31,7 +31,8 @@ export default {
       text: "Подключить",
       selectedPort: null,
       port: null,
-      dataToTransmit: []
+      dataToTransmit: [],
+      rxWork: false,
     };
   },
   mounted() {
@@ -81,10 +82,17 @@ export default {
         if (err) {
           this.$modal.show(Modal, {text: err}, {draggable: true});
         }
+        setTimeout(() => {
+          if (!this.rxWork) {
+            this.$modal.show(Modal, {text: 'Устройство не отвечает'}, {draggable: true});
+            this.onConnect();
+          }
+        }, 1000);
       });
       this.port.on("data", data => {
         bus.$emit("rx", data.toString());
         if (data.toString() == "!") {
+          this.rxWork = true;
           this.transmitData();
         } else if (data.toString() == "?") {
           console.log("Error on board");
@@ -96,6 +104,7 @@ export default {
       this.text = "Подключить";
       this.port.close();
       console.log("Serial Port disconnected");
+      this.rxWork = false;
       return false;
     },
     transmitData() {

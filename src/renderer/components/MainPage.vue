@@ -11,8 +11,8 @@
     <div class="body-wrapper">
       <div class="left-wrapper">
         <div class="swithets-bar">
-          <Switcher class="switcher" v-on:change.native="switchParams" :id="'params'"></Switcher>
-          <Switcher class="switcher" v-on:change.native="switchUnits" :id="'units'"></Switcher>
+          <Switcher class="switcher" v-on:change.native="switchParams" :id="'params'" :text="'Параметры'"></Switcher>
+          <Switcher class="switcher" v-on:change.native="switchUnits" :id="'units'" :text="'Единицы'"></Switcher>
         </div>
         <div class="input-frame">
           <div v-if="mainParams">

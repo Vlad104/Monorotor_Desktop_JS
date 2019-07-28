@@ -1,7 +1,7 @@
 <template>
   <div class="widget-info">
-    <a class="widget-info__item">Объём с дозатора А: <i>{{ (protocol.data.volume.value * protocol.data.ratioA.value).toFixed(3) }} мл</i></a>
-    <a class="widget-info__item">Объём с дозатора Б: <i>{{ (protocol.data.volume.value * protocol.data.ratioB.value).toFixed(3) }} мл</i></a>
+    <a class="widget-info__item">Объём с дозатора А: <i>{{ this.calculateA() }} мл</i></a>
+    <a class="widget-info__item">Объём с дозатора Б: <i>{{ this.calculateB() }} мл</i></a>
     <a
       class="widget-info__item"
     >Время дозирования: <i>{{ (60 * protocol.data.volume.value / protocol.data.feedrate.value + protocol.data.feedrate.value / protocol.data.accel.value).toFixed(2) }} секунд</i></a>
@@ -44,6 +44,24 @@ export default {
       this.time = 0;
       clearInterval(this.timeId);
       this.timeId = null;
+    },
+    calculateA() {
+      if (this.protocol.data.dozator.value === '2') {
+        return (this.protocol.data.volume.value * this.protocol.data.ratioA.value).toFixed(3);
+      } else if (this.protocol.data.dozator.value === '0') {
+        return (this.protocol.data.volume.value * 1.0).toFixed(3);
+      } else {
+        return 0;
+      }
+    },
+    calculateB() {
+      if (this.protocol.data.dozator.value === '2') {
+        return (this.protocol.data.volume.value * this.protocol.data.ratioB.value).toFixed(3);
+      } else if (this.protocol.data.dozator.value === '1') {
+        return (this.protocol.data.volume.value * 1.0).toFixed(3);
+      } else {
+        return 0;
+      }
     }
   }
 };

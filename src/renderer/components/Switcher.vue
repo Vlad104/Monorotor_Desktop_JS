@@ -1,5 +1,6 @@
 <template>
   <div id="switcher">
+    <a class="switcher__text">{{ text }}</a>
     <input type="checkbox" :id="id" class="switcher__input"/>
     <label :for="id" class="switcher__label">Toggle</label>
   </div>
@@ -9,7 +10,7 @@
 
 export default {
   name: "Switcher",
-  props: ["id"],
+  props: ["id", "text"],
   data() {
     return {
 
@@ -63,6 +64,10 @@ export default {
 
 .switcher__label:hover {
   box-shadow: 0 0 4px 0px var(--mainColor);
+}
+
+.switcher__text{
+  font-size: 0.5rem;
 }
 
 </style>
